@@ -12,6 +12,7 @@ module SPCUtb();
     wire ALUSrc;
     wire RegWrite;
     wire Jump;
+    wire Link;
     wire EXTOp;
     wire [2:0] opcode;
 
@@ -37,6 +38,7 @@ module SPCUtb();
         .ALUSrc(ALUSrc),
         .RegWrite(RegWrite),
         .Jump(Jump),
+        .Link(Link),
         .EXTOp(EXTOp),
         .opcode(opcode),
         .ReadData1(ReadData1),

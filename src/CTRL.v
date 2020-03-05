@@ -52,11 +52,13 @@ module CTRL(
     output reg RegWrite,
     output reg Jump,
     output reg EXTOp,
+    output reg Link,
     output wire [2:0] opcode
 );
     reg [1:0] ALUOp;
     ALU_CTRL alu_ctrl(.ALUOp(ALUOp), .funct(funct), .opcode(opcode));
     always @(*) begin
+        Link = `False;
         case (INSTop)
             `j_op: begin
                 ALUOp = 2'b00;
@@ -71,7 +73,17 @@ module CTRL(
                 EXTOp = `False;
             end
             `jal_op: begin
-                
+                ALUOp = 2'b00;
+                RegDst = `False;
+                ALUSrc = `False;
+                MemtoReg = `False;
+                RegWrite = `True;
+                MemRead = `False;
+                MemWrite = `False;
+                Branch = `False;
+                Jump = `True;
+                EXTOp = `False;
+                Link = `True;
             end
             `typer_op: begin
                 ALUOp = 2'b10;
