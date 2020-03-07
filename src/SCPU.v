@@ -12,6 +12,7 @@ module SCPU(
     output RegWrite,
     output Jump,
     output EXTOp,
+    output Link,
     output [2:0] opcode,
     //-------------ctrl singal output END
     
@@ -67,6 +68,8 @@ module SCPU(
     //--------------------zero signal END
     
     
+    
+
     //THE ADDRESS CONTROL PART WILL BEGIN IN THIS BLOCK
     
     
@@ -129,6 +132,7 @@ module SCPU(
         .RegWrite(RegWrite),
         .Jump(Jump),
         .EXTOp(EXTOp),
+        .Link(Link),
         .opcode(opcode)
     );
 
@@ -148,12 +152,33 @@ module SCPU(
         .jAddr(jAddr)
     );
 
+    wire [4:0] NormalInst_reg_src;
     MUX2_5b reg_dst_mux2(
         .source0(rtReg),
         .source1(rdReg),
         .addr(RegDst),
+        .sltd(NormalInst_reg_src)
+    );
+    
+    wire [4:0] Jal_reg_src;
+    assign Jal_reg_src = 5'b11111;
+
+    MUX2_5b link_mux2(
+        .source0(NormalInst_reg_src),
+        .source1(Jal_reg_src),
+        .addr(Link),
         .sltd(regWriteAddr)
     );
+
+    wire [31:0] memORalu_src_data;
+    
+    MUX2 write_data_mux2(
+        .source0(memORalu_src_data),
+        .source1(PCadd4),
+        .addr(Link),
+        .sltd(WriteData)
+    );
+
 
     RF regfile(
         .clk(clk),
@@ -201,7 +226,7 @@ module SCPU(
         .source0(ALU_result),
         .source1(MEMdataOut),
         .addr(MemtoReg),
-        .sltd(WriteData)
+        .sltd(memORalu_src_data)
     );
 
 
