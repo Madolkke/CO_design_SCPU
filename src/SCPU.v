@@ -1,19 +1,22 @@
+`include "ctrl_encode_def.v"
 module SCPU(
     input clk,
     input rst,
 
     //ctrl signal output BEGIN-----------
     output RegDst,
-    output Branch,
+
     output MemRead,
     output MemtoReg,
     output MemWrite,
     output ALUSrc,
     output RegWrite,
-    output Jump,
-    output EXTOp,
+
+    output [1:0] EXTOp,
     output Link,
-    output [2:0] opcode,
+    output Shamt,
+    output [1:0] AddrSrc,
+    output [3:0] opcode,
     //-------------ctrl singal output END
     
     //data read by regfile BEGIN---------
@@ -56,7 +59,8 @@ module SCPU(
 
 
     //this signal is the source selected by [alu_src_mux2] BEGIN-----
-    wire [31:0] ALUSrc_data;
+    wire [31:0] ALUSrc_dataB;
+    wire [31:0] ALUSrc_dataA;
     //------------------------------------------------------------END
     
     //this signal is the result of ALU calculated BEGIN-----
@@ -98,22 +102,15 @@ module SCPU(
         .branchPC(branchPC)
     );
 
-    wire branch_select_signal;
-    wire [31:0] branch_result;
-    assign branch_select_signal = Branch & zero_signal;
     
-    MUX2 branch_mux2(
+    wire [1:0] addr_src_mid;
+    assign addr_src_mid = (AddrSrc == `branch_src) ? ({1'b0, (RegDst ? ~zero_signal : zero_signal)}) : (AddrSrc);
+    MUX4 pc_update_mux4(
         .source0(PCadd4),
         .source1(branchPC),
-        .addr(branch_select_signal),
-        .sltd(branch_result)
-    );
-
-    
-    MUX2 jump_mux2(
-        .source0(branch_result),
-        .source1(jumpAddr),
-        .addr(Jump),
+        .source2(jumpAddr),
+        .source3(ReadData1),
+        .addr(addr_src_mid),
         .sltd(newPC)
     );
 
@@ -124,15 +121,15 @@ module SCPU(
         .INSTop(INSTop),
         .funct(funct),
         .RegDst(RegDst),
-        .Branch(Branch),
         .MemRead(MemRead),
         .MemtoReg(MemtoReg),
         .MemWrite(MemWrite),
         .ALUSrc(ALUSrc),
         .RegWrite(RegWrite),
-        .Jump(Jump),
         .EXTOp(EXTOp),
         .Link(Link),
+        .Shamt(Shamt),
+        .AddrSrc(AddrSrc),
         .opcode(opcode)
     );
 
@@ -152,21 +149,19 @@ module SCPU(
         .jAddr(jAddr)
     );
 
-    wire [4:0] NormalInst_reg_src;
-    MUX2_5b reg_dst_mux2(
-        .source0(rtReg),
-        .source1(rdReg),
-        .addr(RegDst),
-        .sltd(NormalInst_reg_src)
-    );
     
     wire [4:0] Jal_reg_src;
     assign Jal_reg_src = 5'b11111;
 
-    MUX2_5b link_mux2(
-        .source0(NormalInst_reg_src),
+    wire [1:0] reg_addr;
+    assign reg_addr = {RegDst, Link};
+
+    MUX4_5b reg_dst_mux4(
+        .source0(rtReg),
         .source1(Jal_reg_src),
-        .addr(Link),
+        .source2(rdReg),
+        .source3(rdReg),
+        .addr(reg_addr),
         .sltd(regWriteAddr)
     );
 
@@ -202,12 +197,19 @@ module SCPU(
         .source0(ReadData2),
         .source1(Imm32),
         .addr(ALUSrc),
-        .sltd(ALUSrc_data)
+        .sltd(ALUSrc_dataB)
+    );
+
+    MUX2 shamt_mux2(
+        .source0(ReadData1),
+        .source1(Imm32),
+        .addr(Shamt),
+        .sltd(ALUSrc_dataA)
     );
 
     ALU main_alu(
-        .A(ReadData1),
-        .B(ALUSrc_data),
+        .A(ALUSrc_dataA),
+        .B(ALUSrc_dataB),
         .opcode(opcode),
         .C(ALU_result),
         .Zero(zero_signal)

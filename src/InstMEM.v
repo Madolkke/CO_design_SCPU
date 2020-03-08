@@ -8,7 +8,10 @@ module InstMEM(
         for (i = 0;i < 128;i = i + 1) begin
             MEM[i] = 32'b0;
         end
-        $readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu_with_jal\\test\\basic_test_true.dat", MEM);
+        //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstest_extloop.dat", MEM);
+        //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstestloop_sim.dat", MEM);
+        //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstestloopjal_sim.dat", MEM);
+        $readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\bnetest.dat", MEM);
     end
 
     always @(*) begin

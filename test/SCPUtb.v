@@ -5,16 +5,16 @@ module SPCUtb();
     reg rst;
 
     wire RegDst;
-    wire Branch;
     wire MemRead;
     wire MemtoReg;
     wire MemWrite;
     wire ALUSrc;
     wire RegWrite;
-    wire Jump;
     wire Link;
-    wire EXTOp;
-    wire [2:0] opcode;
+    wire Shamt;
+    wire [1:0] AddrSrc;
+    wire [1:0] EXTOp;
+    wire [3:0] opcode;
 
     wire [31:0] ReadData1;
     wire [31:0] ReadData2;
@@ -31,13 +31,13 @@ module SPCUtb();
         .clk(clk),
         .rst(rst),
         .RegDst(RegDst),
-        .Branch(Branch),
         .MemRead(MemtoReg),
         .MemtoReg(MemtoReg),
         .MemWrite(MemWrite),
         .ALUSrc(ALUSrc),
+        .AddrSrc(AddrSrc),
+        .Shamt(Shamt),
         .RegWrite(RegWrite),
-        .Jump(Jump),
         .Link(Link),
         .EXTOp(EXTOp),
         .opcode(opcode),
