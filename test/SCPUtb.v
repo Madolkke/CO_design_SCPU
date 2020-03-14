@@ -5,9 +5,10 @@ module SPCUtb();
     reg rst;
 
     wire RegDst;
-    wire MemRead;
+    wire [1:0] MemRead;
     wire MemtoReg;
-    wire MemWrite;
+    wire [1:0] MemWrite;
+    wire Unsigned;
     wire ALUSrc;
     wire RegWrite;
     wire Link;
@@ -31,7 +32,7 @@ module SPCUtb();
         .clk(clk),
         .rst(rst),
         .RegDst(RegDst),
-        .MemRead(MemtoReg),
+        .MemRead(MemRead),
         .MemtoReg(MemtoReg),
         .MemWrite(MemWrite),
         .ALUSrc(ALUSrc),
@@ -39,6 +40,7 @@ module SPCUtb();
         .Shamt(Shamt),
         .RegWrite(RegWrite),
         .Link(Link),
+        .Unsigned(Unsigned),
         .EXTOp(EXTOp),
         .opcode(opcode),
         .ReadData1(ReadData1),

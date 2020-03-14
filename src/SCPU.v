@@ -6,15 +6,16 @@ module SCPU(
     //ctrl signal output BEGIN-----------
     output RegDst,
 
-    output MemRead,
+    output [1:0] MemRead,
     output MemtoReg,
-    output MemWrite,
+    output [1:0] MemWrite,
     output ALUSrc,
     output RegWrite,
 
     output [1:0] EXTOp,
     output Link,
     output Shamt,
+    output Unsigned,
     output [1:0] AddrSrc,
     output [3:0] opcode,
     //-------------ctrl singal output END
@@ -129,6 +130,7 @@ module SCPU(
         .EXTOp(EXTOp),
         .Link(Link),
         .Shamt(Shamt),
+        .Unsigned(Unsigned),
         .AddrSrc(AddrSrc),
         .opcode(opcode)
     );
@@ -221,6 +223,7 @@ module SCPU(
         .dataIn(ReadData2),
         .MemWrite(MemWrite),
         .MemRead(MemRead),
+        .Unsigned(Unsigned),
         .dataOut(MEMdataOut)
     );
 

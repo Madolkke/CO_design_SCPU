@@ -23,6 +23,8 @@ module ALU(A, B, opcode, C, Zero);
           `ALU_SRL:  C = B >> A;
           `ALU_NOR:  C = ~(A | B);
           `ALU_IMM:  C = B;
+          `ALU_XOR:  C = A ^ B;
+          `ALU_SRA:  C = B >>> A;
           default:   C = A;                          // Undefined
       endcase
    end // end always

@@ -11,7 +11,9 @@ module InstMEM(
         //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstest_extloop.dat", MEM);
         //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstestloop_sim.dat", MEM);
         //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\mipstestloopjal_sim.dat", MEM);
-        $readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\bnetest.dat", MEM);
+        //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\bnetest.dat", MEM);
+        $readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\3rdtest.dat", MEM);
+        //$readmemh("C:\\Users\\madol\\Desktop\\codesign_scpu\\test\\4thtest.dat", MEM);
     end
 
     always @(*) begin

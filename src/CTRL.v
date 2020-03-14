@@ -4,28 +4,31 @@ module CTRL(
     input [5:0] INSTop,
     input [5:0] funct,
     output reg RegDst,
-    output reg MemRead,
+    output reg [1:0] MemRead,
     output reg MemtoReg,
-    output reg MemWrite,
+    output reg [1:0] MemWrite,
     output reg ALUSrc,
     output reg RegWrite,
     output reg [1:0] EXTOp,
     output reg Link,
     output reg Shamt,
+    output reg Unsigned,
     output reg [1:0] AddrSrc,
     output reg [3:0] opcode
 );
+
 
     always @(*) begin
         RegDst = `False;
         ALUSrc = `False;
         MemtoReg = `False;
         RegWrite = `False;
-        MemRead = `False;
-        MemWrite = `False;
-        EXTOp = `False;
+        MemRead = `not_read;
+        MemWrite = `not_write;
+        EXTOp = `unsigned_ext;
         Link = `False;
         Shamt = `False;
+        Unsigned = `False;
         AddrSrc = `origin_src;
         opcode = 4'b1111;
         case (INSTop)
@@ -78,6 +81,10 @@ module CTRL(
                         Shamt = `True;
                         EXTOp = `shamt_ext;
                     end
+                    `sra_funct: begin
+                        Shamt = `True;
+                        EXTOp = `shamt_ext;
+                    end
                     `jr_funct: begin
                         RegWrite = `False;
                         AddrSrc = `reg_src;
@@ -104,6 +111,9 @@ module CTRL(
                     `jr_funct:   opcode = `ALU_NOP;
                     `jalr_funct: opcode = `ALU_NOP;
                     `nor_funct:  opcode = `ALU_NOR;
+                    `xor_funct:  opcode = `ALU_XOR;
+                    `sra_funct:  opcode = `ALU_SRA;
+                    `srav_funct: opcode = `ALU_SRA;
                 endcase
             end
 
@@ -124,13 +134,53 @@ module CTRL(
                 ALUSrc = `True;
                 MemtoReg = `True;
                 RegWrite = `True;
-                MemRead = `True;
+                MemRead = `read_word;
                 opcode = `ALU_ADD;
             end
 
             `sw_op: begin
                 ALUSrc = `True;
-                MemWrite = `True;
+                MemWrite = `write_word;
+                opcode = `ALU_ADD;
+            end
+            `lb_op: begin
+                ALUSrc = `True;
+                MemtoReg = `True;
+                RegWrite = `True;
+                MemRead = `read_byte;
+                opcode = `ALU_ADD;
+            end
+            `lh_op: begin
+                ALUSrc = `True;
+                MemtoReg = `True;
+                RegWrite = `True;
+                MemRead = `read_halfword;
+                opcode = `ALU_ADD;
+            end
+            `lbu_op: begin
+                ALUSrc = `True;
+                MemtoReg = `True;
+                RegWrite = `True;
+                Unsigned = `True;
+                MemRead = `read_byte;
+                opcode = `ALU_ADD;
+            end
+            `lhu_op: begin
+                ALUSrc = `True;
+                MemtoReg = `True;
+                RegWrite = `True;
+                MemRead = `read_halfword;
+                Unsigned = `True;
+                opcode = `ALU_ADD;
+            end
+            `sb_op: begin
+                ALUSrc = `True;
+                MemWrite = `write_byte;
+                opcode = `ALU_ADD;
+            end
+            `sh_op: begin
+                ALUSrc = `True;
+                MemWrite = `write_halfword;
                 opcode = `ALU_ADD;
             end
 
